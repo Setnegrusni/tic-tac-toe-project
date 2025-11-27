@@ -1,0 +1,63 @@
+* {
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+body, html {
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 30vw 70vw;
+    grid-template-rows: 1fr 8fr 1fr;
+}
+
+div {
+    border: 1px solid black;
+}
+
+.header, 
+.footer {
+    grid-column: 1 / span 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5%;
+}
+
+.game-info {
+    width: 36vw;
+    height: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-board {
+    height: 36vw;
+    width: 36vw;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    align-items: center;
+}
+
+.grid-cell {
+    height: 100%;
+    width: 100%;
+}
