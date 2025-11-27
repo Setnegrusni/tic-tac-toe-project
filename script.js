@@ -1,3 +1,33 @@
+//Variables globales
+const btStart = document.querySelector("button");
+
+//Botones
+btStart.addEventListener("click", () => {
+    if (btStart.classList.contains("reset")) {
+        btStart.classList.replace("reset", "start");
+        btStart.textContent = "START GAME";
+        //resetGame();
+    } else {
+        btStart.classList.replace("start", "reset");
+        btStart.textContent = "RESET GAME";
+        playGame();
+    }
+});
+
+//Funciones
+function playGame() {
+    const gamePlayer = player(); //Factory para crear y almacenar jugadores
+    gamePlayer.createPlayer("Bocho", "O"); //jugador 1
+    gamePlayer.createPlayer("Setnegrusni", "X"); //jugador 2
+    const myPlayers = gamePlayer.allPlayers;
+
+    const gamePad = gameBoard();
+    const gameFlow = gameController();
+
+    gamePad.printGrid(); //Imprime el gato
+    gameFlow.fullGame(myPlayers[0], myPlayers[1]);
+}
+
 //Factory function that returns two players each with a marker
 function player() {
     const allPlayers = [];
@@ -12,56 +42,70 @@ function player() {
 
 //Factory function that returns the gameboard
 function gameBoard() {
-    const grid = [];
+    const grid = [
+        ["","",""],
+        ["","",""],
+        ["","",""]
+    ];
     const columns = 3;
     const rows = 3;
     const gameBoard = document.querySelector(".game-board");
 
-
     function printGrid() {
         for (let i = 0; i < columns; i++) {
-            grid[i] = []; //crea las 3 columnas
-
-            for (let j = 0; j < rows; j++) { //crea las 3 filas
-                grid[i][j] = "";
-
+            for (let j = 0; j < rows; j++) { 
                 const myCell = document.createElement("div");
+                //const myCellText = document.createElement("p")
                 myCell.classList.add("grid-cell");
                 myCell.setAttribute("data-col", j);
                 myCell.setAttribute("data-row", i);
                 gameBoard.appendChild(myCell);
+                //myCell.appendChild(myCellText);
             }
         }
     }
 
-    return {printGrid}
+    return { printGrid, grid }
 }
 
+//Factory that returns game movements
+function gameController() {
+    function fullGame(playerOne, playerTwo) {
+        const myCells = document.querySelectorAll(".grid-cell");
+        const gameInfo = document.querySelector(".game-info > p");
+        const myGrid = gameBoard();
+        let activePlayer = playerOne; //Controla al jugador activo
+        let auxPlayer = playerTwo; //Controla el texto de jugador en turno
+        //console.log("player 1: " + playerOne.playerName + " - marker: " + playerOne.marker);
+        //console.log("player 2: " + playerTwo.playerName + " - marker: " + playerTwo.marker);
 
-function playGame() {
-    const btStart = document.querySelector("button");
-    const gamePlayer = player();
-    const playerOne = gamePlayer.createPlayer("Bocho", "O");
-    const playerTwo = gamePlayer.createPlayer("Setenegrusni", "X");
-    const activePlayer = gamePlayer.allPlayers[0];
+        gameInfo.textContent = "Turno de " + activePlayer.playerName + ": selecciona una casilla";
 
-    console.log(activePlayer);
+        myCells.forEach(cell => {
+            cell.addEventListener("click", (e) => {
+                gameInfo.textContent = "Turno de " + auxPlayer.playerName + ": selecciona una casilla";
 
-    gameBoard().printGrid();
+                const cellRow = e.target.dataset.row;
+                const cellCol = e.target.dataset.col;
 
-    btStart.addEventListener("click", () => {
-        if (btStart.classList.contains("start")) {
+                //console.log("Celda: " + "[" + cellCol + ", " + cellRow + "]");
+                cell.textContent = activePlayer.marker;
+                myGrid.grid[cellRow][cellCol] = activePlayer.marker;
 
-        }
-    })
+                //Poner condiciones de gane aquí
 
-    const myCells = document.querySelectorAll(".game-board > .grid-cell");
 
-    myCells.forEach(cell => {
-        cell.addEventListener("click", (e) => {
-            
+                console.log(myGrid.grid);
+                if (activePlayer === playerOne) {
+                    activePlayer = playerTwo;
+                    auxPlayer = playerOne;
+                } else {
+                    activePlayer = playerOne;
+                    auxPlayer = playerTwo;
+                }
+            });
         });
-    });
-}
+    }
 
-playGame();
+    return {fullGame}
+}
