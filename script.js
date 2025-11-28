@@ -16,9 +16,9 @@ btStart.addEventListener("click", () => {
 
 //Funciones
 function playGame() {
-    const gamePlayer = player(); //Factory para crear y almacenar jugadores
-    gamePlayer.createPlayer("Bocho", "O"); //jugador 1
-    gamePlayer.createPlayer("Setnegrusni", "X"); //jugador 2
+    const gamePlayer = player();
+    gamePlayer.createPlayer("Bocho", "O"); //crea jugador 1
+    gamePlayer.createPlayer("Setnegrusni", "X"); //crea jugador 2
     const myPlayers = gamePlayer.allPlayers;
 
     const gamePad = gameBoard();
@@ -28,7 +28,7 @@ function playGame() {
     gameFlow.fullGame(myPlayers[0], myPlayers[1]);
 }
 
-//Factory function that returns two players each with a marker
+//Factory function that returns two players, each with a marker
 function player() {
     const allPlayers = [];
 
@@ -55,12 +55,10 @@ function gameBoard() {
         for (let i = 0; i < columns; i++) {
             for (let j = 0; j < rows; j++) { 
                 const myCell = document.createElement("div");
-                //const myCellText = document.createElement("p")
                 myCell.classList.add("grid-cell");
                 myCell.setAttribute("data-col", j);
                 myCell.setAttribute("data-row", i);
                 gameBoard.appendChild(myCell);
-                //myCell.appendChild(myCellText);
             }
         }
     }
@@ -76,26 +74,26 @@ function gameController() {
         const myGrid = gameBoard();
         let activePlayer = playerOne; //Controla al jugador activo
         let auxPlayer = playerTwo; //Controla el texto de jugador en turno
-        //console.log("player 1: " + playerOne.playerName + " - marker: " + playerOne.marker);
-        //console.log("player 2: " + playerTwo.playerName + " - marker: " + playerTwo.marker);
 
+        //Texto de turno inicial
         gameInfo.textContent = "Turno de " + activePlayer.playerName + ": selecciona una casilla";
 
         myCells.forEach(cell => {
             cell.addEventListener("click", (e) => {
+                //Texto de turno siguiente
                 gameInfo.textContent = "Turno de " + auxPlayer.playerName + ": selecciona una casilla";
 
+                //Fila y columna de la celda seleccionada
                 const cellRow = e.target.dataset.row;
                 const cellCol = e.target.dataset.col;
-
-                //console.log("Celda: " + "[" + cellCol + ", " + cellRow + "]");
+                //Pone marca del jugador que seleccionó la casilla y la agrega al arreglo
                 cell.textContent = activePlayer.marker;
                 myGrid.grid[cellRow][cellCol] = activePlayer.marker;
+                
+                //Condiciones de gane aquí
+                console.log(winPatterns(activePlayer.marker).myWinner);
 
-                //Poner condiciones de gane aquí
-
-
-                console.log(myGrid.grid);
+                //Control de cambio de jugador y texto de turno
                 if (activePlayer === playerOne) {
                     activePlayer = playerTwo;
                     auxPlayer = playerOne;
@@ -105,6 +103,47 @@ function gameController() {
                 }
             });
         });
+
+        function winPatterns(marker) {
+            let winnerFlag = false;
+            let myWinner = "";
+
+            //Patrones de gane horizontales
+            //myGrid.grid[0][0] === marker && myGrid.grid[0][1] === marker && myGrid.grid[0][2] === marker
+            if (myGrid.grid[0][0] === marker && myGrid.grid[0][1] === marker && myGrid.grid[0][2] === marker) {
+                winnerFlag = true
+                myWinner = marker
+            } else if (myGrid.grid[1][0] === marker && myGrid.grid[1][1] === marker && myGrid.grid[1][2] === marker) {
+                winnerFlag = true
+                myWinner = myGrid.grid[1][0];
+            } else if (myGrid.grid[2][0] === marker && myGrid.grid[2][1] === marker && myGrid.grid[2][2] === marker) {
+                winnerFlag = true
+                myWinner = myGrid.grid[2][0];
+            }
+
+            //Patrones de gane verticales
+            if (myGrid.grid[0][0] === marker && myGrid.grid[1][0] === marker && myGrid.grid[2][0] === marker) {
+                winnerFlag = true
+                myWinner = myGrid.grid[0][0];
+            } else if (myGrid.grid[0][1] === marker && myGrid.grid[1][1] === marker && myGrid.grid[2][1] === marker) {
+                winnerFlag = true
+                myWinner = myGrid.grid[0][1];
+            } else if (myGrid.grid[0][2] === marker && myGrid.grid[1][2] === marker && myGrid.grid[2][2] === marker) {
+                winnerFlag = true
+                myWinner = myGrid.grid[0][2];
+            }
+
+            //Patrones de gane diagonales
+            if (myGrid.grid[0][0] === marker && myGrid.grid[1][1] === marker && myGrid.grid[2][2] === marker) {
+                winnerFlag = true
+                myWinner = myGrid.grid[0][0];
+            } else if (myGrid.grid[0][2] === marker && myGrid.grid[1][1] === marker && myGrid.grid[2][0] === marker) {
+                winnerFlag = true
+                myWinner = myGrid.grid[0][2];
+            }
+
+            return {winnerFlag, myWinner}
+        }
     }
 
     return {fullGame}
