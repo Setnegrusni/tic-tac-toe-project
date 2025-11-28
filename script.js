@@ -6,7 +6,7 @@ btStart.addEventListener("click", () => {
     if (btStart.classList.contains("reset")) {
         btStart.classList.replace("reset", "start");
         btStart.textContent = "START GAME";
-        //resetGame();
+        resetGame();
     } else {
         btStart.classList.replace("start", "reset");
         btStart.textContent = "RESET GAME";
@@ -15,6 +15,27 @@ btStart.addEventListener("click", () => {
 });
 
 //Funciones
+function resetGame() {
+    const gamePad = gameBoard();
+
+    //Limpia el arreglo
+    gamePad.grid = [
+        ["", "", ""],
+        ["", "", ""],
+        ["", "", ""]
+    ];
+
+    //Limpia el board
+    const myCells = document.querySelectorAll(".grid-cell");
+    myCells.forEach(cell => {
+        cell.remove();
+    });
+
+    //Texto del juego se reinicia
+    const gameInfo = document.querySelector(".game-info > p");
+    gameInfo.textContent = "START GAME!";
+}
+
 function playGame() {
     const gamePlayer = player();
     gamePlayer.createPlayer("Bocho", "O"); //crea jugador 1
@@ -43,9 +64,9 @@ function player() {
 //Factory function that returns the gameboard
 function gameBoard() {
     const grid = [
-        ["","",""],
-        ["","",""],
-        ["","",""]
+        ["", "", ""],
+        ["", "", ""],
+        ["", "", ""]
     ];
     const columns = 3;
     const rows = 3;
@@ -53,7 +74,7 @@ function gameBoard() {
 
     function printGrid() {
         for (let i = 0; i < columns; i++) {
-            for (let j = 0; j < rows; j++) { 
+            for (let j = 0; j < rows; j++) {
                 const myCell = document.createElement("div");
                 myCell.classList.add("grid-cell");
                 myCell.setAttribute("data-col", j);
@@ -66,6 +87,14 @@ function gameBoard() {
     return { printGrid, grid }
 }
 
+//Function that disables the gameboard
+function gameEnded() {
+    document.querySelectorAll(".grid-cell").forEach(cell => {
+        cell.style.pointerEvents = "none"; //Deshabilita los clicks en las celdas
+        cell.style.opacity = "0.5"; //Añade opacidad para dar a entender el final del juego
+    });
+}
+
 //Factory that returns game movements
 function gameController() {
     function fullGame(playerOne, playerTwo) {
@@ -74,6 +103,7 @@ function gameController() {
         const myGrid = gameBoard();
         let activePlayer = playerOne; //Controla al jugador activo
         let auxPlayer = playerTwo; //Controla el texto de jugador en turno
+        let gameFinished = false; //Controla si el juego ha terminado
 
         //Texto de turno inicial
         gameInfo.textContent = "Turno de " + activePlayer.playerName + ": selecciona una casilla";
@@ -81,6 +111,7 @@ function gameController() {
         myCells.forEach(cell => {
             cell.addEventListener("click", (e) => {
                 //Texto de turno siguiente
+
                 gameInfo.textContent = "Turno de " + auxPlayer.playerName + ": selecciona una casilla";
 
                 //Fila y columna de la celda seleccionada
@@ -89,9 +120,32 @@ function gameController() {
                 //Pone marca del jugador que seleccionó la casilla y la agrega al arreglo
                 cell.textContent = activePlayer.marker;
                 myGrid.grid[cellRow][cellCol] = activePlayer.marker;
-                
+
                 //Condiciones de gane aquí
-                console.log(winPatterns(activePlayer.marker).myWinner);
+                const winPlayer = winPatterns(activePlayer.marker)
+                const winnerMarker = winPlayer.myWinner;
+                const winFlag = winPlayer.winnerFlag;
+                let isFilled = myGrid.grid.flat().every(cell => cell !== ""); //Verifica si el arreglo está lleno
+                
+                //En caso de empate
+                if (isFilled) {
+                    gameInfo.textContent = "¡JUEGO EMPATADO!";
+                    gameFinished = true;
+                }
+                //En caso de que gane alguno de los dos jugadores
+                if (winFlag) {
+                    if (winnerMarker === "O") {
+                        gameInfo.textContent = "¡" + playerOne.playerName + " GANA!";
+                        gameFinished = true;
+                    } else if (winnerMarker === "X") {
+                        gameInfo.textContent = "¡" + playerTwo.playerName + " GANA!";
+                        gameFinished = true;
+                    }
+                }
+                //En caso de que el juego termine
+                if (gameFinished) {
+                    gameEnded(); //Deshabilita el tablero ya terminado el juego
+                }
 
                 //Control de cambio de jugador y texto de turno
                 if (activePlayer === playerOne) {
@@ -109,7 +163,6 @@ function gameController() {
             let myWinner = "";
 
             //Patrones de gane horizontales
-            //myGrid.grid[0][0] === marker && myGrid.grid[0][1] === marker && myGrid.grid[0][2] === marker
             if (myGrid.grid[0][0] === marker && myGrid.grid[0][1] === marker && myGrid.grid[0][2] === marker) {
                 winnerFlag = true
                 myWinner = marker
@@ -142,9 +195,9 @@ function gameController() {
                 myWinner = myGrid.grid[0][2];
             }
 
-            return {winnerFlag, myWinner}
+            return { winnerFlag, myWinner }
         }
     }
 
-    return {fullGame}
+    return { fullGame }
 }
