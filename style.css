@@ -32,6 +32,21 @@ div {
     gap: 20px;
 }
 
+#name-one,
+#name-two {
+    width: 100%;
+}
+
+#name-one:invalid,
+#name-two:invalid {
+    border-color: red;
+}
+
+#name-one:valid,
+#name-two:valid {
+    border-color: green;
+}
+
 .main-content {
     display: flex;
     flex-direction: column;
@@ -46,15 +61,17 @@ div {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: 20px;
 }
 
 .game-board {
-    height: 36vw;
-    width: 36vw;
+    height: 35vw;
+    width: 35vw;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
     align-items: center;
+    margin-bottom: 20px;
 }
 
 .grid-cell {
