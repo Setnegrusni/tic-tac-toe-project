@@ -10,7 +10,7 @@ btStart.addEventListener("click", () => {
         btStart.textContent = "START GAME";
         resetGame();
     } else {
-        if (firstPlayerName.value.length < 3 || secondPlayerName.value.length < 3) {
+        if (firstPlayerName.value.length < 3 || secondPlayerName.value.length < 3 || firstPlayerName.value == secondPlayerName.value) {
             alert("Por favor, ingresa un nombre para cada jugador. Cada nombre debe contener al menos 3 caracteres.");
         } else {
             btStart.classList.replace("start", "reset");
