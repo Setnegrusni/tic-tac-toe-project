@@ -1,4 +1,6 @@
 //Variables globales
+const firstPlayerName = document.querySelector("#name-one");
+const secondPlayerName = document.querySelector("#name-two");
 const btStart = document.querySelector("button");
 
 //Botones
@@ -8,9 +10,13 @@ btStart.addEventListener("click", () => {
         btStart.textContent = "START GAME";
         resetGame();
     } else {
-        btStart.classList.replace("start", "reset");
-        btStart.textContent = "RESET GAME";
-        playGame();
+        if (firstPlayerName.value.length < 3 || secondPlayerName.value.length < 3) {
+            alert("Por favor, ingresa un nombre para cada jugador. Cada nombre debe contener al menos 3 caracteres.");
+        } else {
+            btStart.classList.replace("start", "reset");
+            btStart.textContent = "RESET GAME";
+            playGame();
+        }
     }
 });
 
@@ -38,8 +44,8 @@ function resetGame() {
 
 function playGame() {
     const gamePlayer = player();
-    gamePlayer.createPlayer("Bocho", "O"); //crea jugador 1
-    gamePlayer.createPlayer("Setnegrusni", "X"); //crea jugador 2
+    gamePlayer.createPlayer(firstPlayerName.value, "O"); //crea jugador 1
+    gamePlayer.createPlayer(secondPlayerName.value, "X"); //crea jugador 2
     const myPlayers = gamePlayer.allPlayers;
 
     const gamePad = gameBoard();
@@ -111,49 +117,55 @@ function gameController() {
         myCells.forEach(cell => {
             cell.addEventListener("click", (e) => {
                 //Texto de turno siguiente
-
                 gameInfo.textContent = "Turno de " + auxPlayer.playerName + ": selecciona una casilla";
 
                 //Fila y columna de la celda seleccionada
                 const cellRow = e.target.dataset.row;
                 const cellCol = e.target.dataset.col;
-                //Pone marca del jugador que seleccionó la casilla y la agrega al arreglo
-                cell.textContent = activePlayer.marker;
-                myGrid.grid[cellRow][cellCol] = activePlayer.marker;
 
-                //Condiciones de gane aquí
-                const winPlayer = winPatterns(activePlayer.marker)
-                const winnerMarker = winPlayer.myWinner;
-                const winFlag = winPlayer.winnerFlag;
-                let isFilled = myGrid.grid.flat().every(cell => cell !== ""); //Verifica si el arreglo está lleno
-                
-                //En caso de empate
-                if (isFilled) {
-                    gameInfo.textContent = "¡JUEGO EMPATADO!";
-                    gameFinished = true;
-                }
-                //En caso de que gane alguno de los dos jugadores
-                if (winFlag) {
-                    if (winnerMarker === "O") {
-                        gameInfo.textContent = "¡" + playerOne.playerName + " GANA!";
-                        gameFinished = true;
-                    } else if (winnerMarker === "X") {
-                        gameInfo.textContent = "¡" + playerTwo.playerName + " GANA!";
+                //Valida si ya se ha seleccionado una casilla
+                if (myGrid.grid[cellRow][cellCol] === "O" || myGrid.grid[cellRow][cellCol] === "X") {
+                    gameInfo.textContent = "La casilla ya ha sido seleccionada. Elige otra casilla, " + activePlayer.playerName + ":";
+                } else {
+                    //Pone marca del jugador que seleccionó la casilla y la agrega al arreglo
+                    cell.textContent = activePlayer.marker;
+                    myGrid.grid[cellRow][cellCol] = activePlayer.marker;
+
+                    //Condiciones de gane
+                    const winPlayer = winPatterns(activePlayer.marker)
+                    const winnerMarker = winPlayer.myWinner;
+                    const winFlag = winPlayer.winnerFlag;
+                    let isFilled = myGrid.grid.flat().every(cell => cell !== ""); //Verifica si el arreglo está lleno
+
+
+                    //En caso de empate
+                    if (isFilled) {
+                        gameInfo.textContent = "¡JUEGO EMPATADO!";
                         gameFinished = true;
                     }
-                }
-                //En caso de que el juego termine
-                if (gameFinished) {
-                    gameEnded(); //Deshabilita el tablero ya terminado el juego
-                }
+                    //En caso de que gane alguno de los dos jugadores
+                    if (winFlag) {
+                        if (winnerMarker === "O") {
+                            gameInfo.textContent = "¡" + playerOne.playerName + " GANA!";
+                            gameFinished = true;
+                        } else if (winnerMarker === "X") {
+                            gameInfo.textContent = "¡" + playerTwo.playerName + " GANA!";
+                            gameFinished = true;
+                        }
+                    }
+                    //En caso de que el juego termine
+                    if (gameFinished) {
+                        gameEnded(); //Deshabilita el tablero ya terminado el juego
+                    }
 
-                //Control de cambio de jugador y texto de turno
-                if (activePlayer === playerOne) {
-                    activePlayer = playerTwo;
-                    auxPlayer = playerOne;
-                } else {
-                    activePlayer = playerOne;
-                    auxPlayer = playerTwo;
+                    //Control de cambio de jugador y texto de turno
+                    if (activePlayer === playerOne) {
+                        activePlayer = playerTwo;
+                        auxPlayer = playerOne;
+                    } else {
+                        activePlayer = playerOne;
+                        auxPlayer = playerTwo;
+                    }
                 }
             });
         });
