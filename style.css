@@ -11,17 +11,33 @@ body, html {
     grid-template-columns: 30vw 70vw;
     grid-template-rows: 1fr 8fr 1fr;
 }
-
+/*
 div {
-    border: 1px solid black;
+    border: 1px solid white;
 }
-
+*/
 .header, 
 .footer {
     grid-column: 1 / span 2;
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: black;
+}
+
+.header > p,
+.footer > p {
+    font-weight: bold;
+    font-size: 2rem;
+    color: white;
+}
+
+.header {
+    border-bottom: 1px solid white;
+}
+
+.footer {
+    border-top: 1px solid white;
 }
 
 .sidebar {
@@ -30,11 +46,22 @@ div {
     justify-content: center;
     align-items: center;
     gap: 20px;
+    background-color: black;
+    border-right: 1px solid white;
+}
+
+.player-info > label {
+    font-weight: bold;
+    color: white;
 }
 
 #name-one,
 #name-two {
     width: 100%;
+    border-radius: 10px;
+    background-color: darkslategray;
+    color: white;
+    font-weight: bold;
 }
 
 #name-one:invalid,
@@ -47,12 +74,26 @@ div {
     border-color: green;
 }
 
+#bt-start-reset {
+    border-radius: 10px;
+    border-style: none;
+    font-weight: bold;
+    width: 200px;
+    height: 30px;
+}
+
+#bt-start-reset:hover {
+    background-color: darkslategray;
+    color: white;
+}
+
 .main-content {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 5%;
+    background-color: black;
 }
 
 .game-info {
@@ -62,6 +103,9 @@ div {
     justify-content: center;
     align-items: center;
     margin-top: 20px;
+    color: white;
+    font-weight: bold;
+    font-size: 1.5rem;
 }
 
 .game-board {
@@ -72,6 +116,9 @@ div {
     grid-template-rows: repeat(3, 1fr);
     align-items: center;
     margin-bottom: 20px;
+    border-color: white;
+    gap: 10px;
+    background-color: black;
 }
 
 .grid-cell {
@@ -81,4 +128,6 @@ div {
     justify-content: center;
     align-items: center;
     font-size: 7rem;
+    background-color: darkslategray;
+    color: white;
 }
